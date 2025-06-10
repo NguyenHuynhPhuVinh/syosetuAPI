@@ -24,13 +24,14 @@
   "keywords": [
     "syosetu",
     "web-scraping",
-    "puppeteer",
+    "cheerio",
     "fastify",
     "typescript",
     "api",
     "novel",
     "light-novel",
-    "enterprise"
+    "enterprise",
+    "serverless"
   ],
   "author": "",
   "license": "ISC",
@@ -51,7 +52,6 @@
     "node-cache": "^5.1.2",
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
-    "puppeteer": "^24.10.0",
     "zod": "^3.25.57"
   },
   "devDependencies": {

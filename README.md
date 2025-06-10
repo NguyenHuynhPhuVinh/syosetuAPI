@@ -1,15 +1,16 @@
 # Syosetu API Backend
 
-Enterprise-grade Fastify TypeScript API chuyên dụng để lấy dữ liệu từ trang web tiểu thuyết Nhật Bản **syosetu.com** sử dụng API chính thức và Puppeteer (Chromium headless).
+Enterprise-grade Fastify TypeScript API chuyên dụng để lấy dữ liệu từ trang web tiểu thuyết Nhật Bản **syosetu.com** sử dụng API chính thức và Cheerio scraping (serverless-ready).
 
 ## ✨ Tính năng
 
 - 📊 **Lấy ranking tiểu thuyết** theo thể loại và thời gian
 - 📚 **Lấy thông tin chi tiết tiểu thuyết** (metadata, danh sách chapter)
-- 📖 **Lấy nội dung chapter đầy đủ** với web scraping
+- 📖 **Lấy nội dung chapter đầy đủ** với Cheerio scraping
 - 🔍 **Tìm kiếm tiểu thuyết** với nhiều bộ lọc nâng cao
 - 🛡️ **Bảo mật enterprise** với Helmet, CORS, Rate Limiting
-- ⚡ **Hiệu suất cao** với caching thông minh và Puppeteer
+- ⚡ **Hiệu suất cao** với caching thông minh và Cheerio
+- 🚀 **Serverless ready** - tối ưu cho Vercel, Netlify, AWS Lambda
 - 📝 **TypeScript** với type safety hoàn toàn
 - 📚 **Swagger Documentation** tự động
 - 🧪 **Testing** với Jest
@@ -89,6 +90,7 @@ GET /docs                     # Swagger UI Documentation
 ## 📖 API Documentation
 
 Sau khi chạy server, truy cập:
+
 - **Swagger UI**: `http://localhost:3000/docs`
 - **Health Check**: `http://localhost:3000/health`
 

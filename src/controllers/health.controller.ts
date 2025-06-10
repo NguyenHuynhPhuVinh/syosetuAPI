@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { HealthCheckResponse } from '@/types';
 import { sendSuccess, createChildLogger, cacheManager } from '@/utils';
-import { browserService } from '@/services';
+import { scraperService } from '@/services';
 
 const logger = createChildLogger('HealthController');
 
@@ -17,7 +17,7 @@ export class HealthController {
         version: '3.0.0',
         services: [
           'Syosetu Official API',
-          'Web Scraping với Puppeteer',
+          'Web Scraping với Cheerio',
           'Caching với NodeCache',
           'Rate Limiting',
           'TypeScript Support',
@@ -36,7 +36,7 @@ export class HealthController {
         },
         features: [
           'Lấy metadata từ API chính thức Syosetu',
-          'Lấy nội dung chapter bằng web scraping',
+          'Lấy nội dung chapter bằng Cheerio scraping',
           'Cache tự động với TTL',
           'Rate limiting thông minh',
           'Tìm kiếm và ranking',
@@ -45,6 +45,7 @@ export class HealthController {
           'Logging với Pino',
           'TypeScript type safety',
           'Enterprise-grade architecture',
+          'Serverless-ready deployment',
         ],
         timestamp: new Date().toISOString(),
       };
@@ -66,15 +67,15 @@ export class HealthController {
   ): Promise<void> {
     try {
       const cacheStats = cacheManager.getStats();
-      const browserConnected = await browserService.isConnected();
+      const scraperAvailable = await scraperService.isAvailable();
 
-      let browserVersion = 'Not connected';
+      let scraperStatus = 'Not available';
       try {
-        if (browserConnected) {
-          browserVersion = await browserService.getVersion();
+        if (scraperAvailable) {
+          scraperStatus = 'Available - Cheerio v1.1.0';
         }
       } catch (error) {
-        logger.warn('Could not get browser version:', error);
+        logger.warn('Could not check scraper status:', error);
       }
 
       const response = {
@@ -84,7 +85,7 @@ export class HealthController {
         timestamp: new Date().toISOString(),
         services: {
           api: 'Online',
-          browser: browserConnected ? 'Connected' : 'Disconnected',
+          scraper: scraperAvailable ? 'Available' : 'Unavailable',
           cache: 'Active',
         },
         cache: {
@@ -105,19 +106,21 @@ export class HealthController {
                 (cacheStats.content.hits + cacheStats.content.misses) || 0,
           },
         },
-        browser: {
-          connected: browserConnected,
-          version: browserVersion,
+        scraper: {
+          available: scraperAvailable,
+          engine: 'Cheerio',
+          version: scraperStatus,
         },
         features: [
           'Lấy metadata từ API chính thức',
-          'Lấy nội dung chapter bằng web scraping',
+          'Lấy nội dung chapter bằng Cheerio scraping',
           'Tìm kiếm tiểu thuyết',
           'Lấy ranking',
           'Cache tự động',
           'Rate limiting',
           'TypeScript support',
           'Enterprise architecture',
+          'Serverless deployment ready',
         ],
         endpoints: {
           'GET /health': 'Health check cơ bản',

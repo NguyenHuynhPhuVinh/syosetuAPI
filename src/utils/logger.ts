@@ -11,6 +11,8 @@ export const logger = pino(
             colorize: true,
             translateTime: 'SYS:standard',
             ignore: 'pid,hostname',
+            messageFormat: '{msg}',
+            sync: true,
           },
         },
       }

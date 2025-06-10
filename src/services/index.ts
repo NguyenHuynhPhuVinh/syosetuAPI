@@ -1,2 +1,2 @@
 export * from './syosetu.service';
-export * from './browser.service';
+export * from './scraper.service';

@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { createApp } from './app';
 import { appConfig } from '@/config';
 import { logger } from '@/utils';
-import { browserService } from '@/services';
 
 async function startServer(): Promise<void> {
   try {
@@ -15,19 +14,21 @@ async function startServer(): Promise<void> {
       host: appConfig.host,
     });
 
-    logger.info(
+    console.log(
       `🚀 Server đang chạy trên http://${appConfig.host}:${appConfig.port}`
     );
-    logger.info(
+    console.log(
       `📊 Health check: http://${appConfig.host}:${appConfig.port}/health`
     );
-    logger.info(
+    console.log(
       `🔍 Syosetu API: http://${appConfig.host}:${appConfig.port}/api/syosetu`
     );
-    logger.info(
+    console.log(
       `📚 API Documentation: http://${appConfig.host}:${appConfig.port}/docs`
     );
-    logger.info(`🌍 Environment: ${appConfig.nodeEnv}`);
+    console.log(`🌍 Environment: ${appConfig.nodeEnv}`);
+
+    logger.info('Server started successfully');
 
     // Graceful shutdown handlers
     const gracefulShutdown = async (signal: string): Promise<void> => {
@@ -37,10 +38,6 @@ async function startServer(): Promise<void> {
         // Close Fastify server
         await app.close();
         logger.info('✅ Fastify server closed');
-
-        // Close browser
-        await browserService.closeBrowser();
-        logger.info('✅ Browser closed');
 
         logger.info('✅ Graceful shutdown completed');
         process.exit(0);

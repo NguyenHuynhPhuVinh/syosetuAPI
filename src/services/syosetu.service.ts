@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from 'axios';
-import { Page } from 'puppeteer';
 import {
   NovelMetadata,
   ChapterContent,
@@ -16,17 +15,15 @@ import {
   CacheManager,
   globalRateLimiter,
 } from '@/utils';
-import { browserService } from './browser.service';
+import { scraperService } from './scraper.service';
 
 const logger = createChildLogger('SyosetuService');
 
 export class SyosetuService {
   private readonly apiBaseUrl: string;
-  private readonly ncodeBaseUrl: string;
 
   constructor() {
     this.apiBaseUrl = syosetuConfig.apiBaseUrl;
-    this.ncodeBaseUrl = syosetuConfig.ncodeBaseUrl;
   }
 
   async getNovelMetadata(ncode: string): Promise<ApiResponse<NovelMetadata>> {
@@ -117,92 +114,21 @@ export class SyosetuService {
       return cached;
     }
 
-    let page: Page | null = null;
+    // Use Cheerio for all environments (optimized for serverless)
+    logger.info(
+      `Fetching content for ncode: ${ncode}, chapter: ${chapterNumber} using Cheerio`
+    );
 
-    try {
-      await globalRateLimiter.waitForRateLimit();
+    const result = await scraperService.getChapterContent(ncode, chapterNumber);
 
-      logger.info(
-        `Fetching content for ncode: ${ncode}, chapter: ${chapterNumber}`
-      );
-
-      page = await browserService.createPage();
-
-      const chapterUrl = `${this.ncodeBaseUrl}/${ncode}/${chapterNumber}/`;
-      await page.goto(chapterUrl, {
-        waitUntil: 'networkidle2',
-        timeout: syosetuConfig.requestTimeout,
-      });
-
-      const chapterData = await page.evaluate(`(() => {
-        // Get chapter title
-        const title =
-          document
-            .querySelector('.novel_subtitle, .p-novel__title')
-            ?.textContent?.trim() || '';
-
-        // Get HTML content
-        const contentElement = document.querySelector(
-          '#novel_honbun, .p-novel__body'
-        );
-        const htmlContent = contentElement?.innerHTML || '';
-
-        // Get plain text content
-        const textContent = contentElement?.textContent?.trim() || '';
-
-        // Get publication date
-        const date =
-          document
-            .querySelector('.novel_subdate, .p-novel__date')
-            ?.textContent?.trim() || '';
-
-        // Count characters
-        const characterCount = textContent.length;
-
-        // Estimate reading time (500 characters per minute)
-        const estimatedReadingTime = Math.ceil(characterCount / 500);
-
-        return {
-          title,
-          htmlContent,
-          textContent,
-          date,
-          characterCount,
-          estimatedReadingTime,
-        };
-      })()`);
-
-      const result: ApiResponse<ChapterContent> = {
-        success: true,
-        data: {
-          ncode,
-          chapterNumber,
-          ...(chapterData as any),
-          url: chapterUrl,
-        },
-        timestamp: new Date().toISOString(),
-      };
-
+    if (result.success) {
       cacheManager.setContent(cacheKey, result);
       logger.info(
         `Content fetched successfully for ncode: ${ncode}, chapter: ${chapterNumber}`
       );
-      return result;
-    } catch (error) {
-      logger.error(
-        `Error fetching content for ncode ${ncode}, chapter ${chapterNumber}:`,
-        error
-      );
-      return {
-        success: false,
-        error: `Lỗi khi lấy nội dung chapter: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date().toISOString(),
-      };
-    } finally {
-      if (page) {
-        await page.close();
-      }
     }
+
+    return result;
   }
 
   async searchNovels(

@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "name": "syosetu-api-backend",
+  "builds": [
+    {
+      "src": "dist/server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000",
+    "HOST": "0.0.0.0",
+    "API_TIMEOUT": "30000",
+    "MAX_CONCURRENT_REQUESTS": "5",
+    "SCRAPER_RETRIES": "3",
+    "SCRAPER_RETRY_DELAY": "1000",
+    "CORS_ORIGIN": "*",
+    "CORS_CREDENTIALS": "true",
+    "RATE_LIMIT_WINDOW_MS": "900000",
+    "RATE_LIMIT_MAX": "100",
+    "CONTENT_RATE_LIMIT_WINDOW_MS": "300000",
+    "CONTENT_RATE_LIMIT_MAX": "20",
+    "LOG_LEVEL": "info",
+    "LOG_PRETTY_PRINT": "false",
+    "METADATA_CACHE_TTL": "600",
+    "CONTENT_CACHE_TTL": "3600",
+    "SYOSETU_API_BASE_URL": "https://api.syosetu.com/novelapi/api/",
+    "SYOSETU_NCODE_BASE_URL": "https://ncode.syosetu.com"
+  },
+  "functions": {
+    "dist/server.js": {
+      "maxDuration": 30
+    }
+  }
+}

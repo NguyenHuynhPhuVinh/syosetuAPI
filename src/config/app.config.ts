@@ -33,20 +33,12 @@ export const cacheConfig = {
   },
 };
 
-export const puppeteerConfig = {
-  skipChromiumDownload: env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD,
-  executablePath: env.PUPPETEER_EXECUTABLE_PATH,
-  launchOptions: {
-    headless: 'new' as const,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--disable-web-security',
-      '--disable-features=VizDisplayCompositor',
-    ],
-  },
+export const scraperConfig = {
+  userAgent:
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  timeout: env.API_TIMEOUT,
+  retries: 3,
+  retryDelay: 1000,
 };
 
 export const syosetuConfig = {
