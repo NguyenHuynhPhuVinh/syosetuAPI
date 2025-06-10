@@ -14,6 +14,12 @@ export async function syosetuRoutes(fastify: FastifyInstance): Promise<void> {
   // Register rate limiting
   await fastify.register(import('@fastify/rate-limit'), rateLimitConfig.api);
 
+  // Content rate limiting for heavy operations
+  const contentRateLimit = {
+    ...rateLimitConfig.content,
+    keyGenerator: (request: any) => request.ip,
+  };
+
   // Get novel metadata
   fastify.get(
     '/api/syosetu/novel/:ncode',
@@ -94,7 +100,10 @@ export async function syosetuRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.get(
     '/api/syosetu/novel/:ncode/chapter/:chapter',
     {
-      preHandler: [validateParams(chapterParamsSchema)],
+      preHandler: [
+        fastify.rateLimit(contentRateLimit),
+        validateParams(chapterParamsSchema),
+      ],
       schema: {
         tags: ['Syosetu'],
         summary: 'Get chapter content',
@@ -150,6 +159,7 @@ export async function syosetuRoutes(fastify: FastifyInstance): Promise<void> {
     '/api/syosetu/novel/:ncode/chapters',
     {
       preHandler: [
+        fastify.rateLimit(contentRateLimit),
         validateParams(ncodeParamsSchema),
         validateBody(multipleChaptersBodySchema),
       ],
