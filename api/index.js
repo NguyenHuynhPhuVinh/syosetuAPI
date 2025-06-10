@@ -1,43 +1,58 @@
-// Simple health check endpoint for Vercel
+// Vercel serverless function entry point for full Fastify app
+require('dotenv/config');
+
+// Import path for built files
+const path = require('path');
+
+// Set up module resolution for TypeScript paths
+require('module-alias/register');
+require('module-alias').addAlias('@', path.join(__dirname, '..', 'dist'));
+
+let app;
+
+// Initialize Fastify app
+async function getApp() {
+  if (!app) {
+    try {
+      console.log('🚀 Initializing Fastify app for serverless...');
+
+      // Import the createApp function from built dist
+      const { createApp } = require('../dist/app');
+
+      app = await createApp();
+      await app.ready();
+
+      console.log('✅ Fastify app initialized successfully');
+    } catch (error) {
+      console.error('❌ Failed to initialize Fastify app:', error);
+      throw error;
+    }
+  }
+  return app;
+}
+
+// Vercel serverless handler
 module.exports = async (req, res) => {
   try {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET, POST, PUT, DELETE, OPTIONS'
-    );
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Content-Type, Authorization'
-    );
+    const fastifyApp = await getApp();
 
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-      res.status(200).end();
-      return;
-    }
+    // Handle the request with Fastify
+    await fastifyApp.ready();
 
-    // Simple API response
-    res.status(200).json({
-      success: true,
-      message: 'Syosetu API Backend is running on Vercel',
-      timestamp: new Date().toISOString(),
-      version: '3.0.0',
-      environment: 'serverless',
-      endpoints: {
-        health: '/api',
-        docs: '/api/docs',
-        syosetu: '/api/syosetu',
-      },
-    });
+    // Use Fastify's built-in request handler
+    fastifyApp.server.emit('request', req, res);
   } catch (error) {
     console.error('❌ Serverless function error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: error.message,
-      timestamp: new Date().toISOString(),
-    });
+
+    // Send error response if headers not sent
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        error: 'Internal Server Error',
+        message: error.message,
+        timestamp: new Date().toISOString(),
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      });
+    }
   }
 };

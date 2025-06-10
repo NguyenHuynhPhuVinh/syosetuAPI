@@ -16,7 +16,7 @@
     "format": "prettier --write src/**/*.ts",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
-    "vercel-build": "npm run build"
+    "vercel-build": "npm run build && echo 'Build completed for Vercel'"
   },
   "repository": {
     "type": "git",
