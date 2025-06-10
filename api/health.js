@@ -1,4 +1,4 @@
-// Vercel serverless function entry point for full Fastify app
+// Vercel serverless function for health check
 require('dotenv/config');
 
 // Import path for built files
@@ -14,15 +14,15 @@ let app;
 async function getApp() {
   if (!app) {
     try {
-      console.log('🚀 Initializing Fastify app for serverless...');
-
+      console.log('🚀 Initializing Fastify app for health...');
+      
       // Import the createApp function from built dist
       const { createApp } = require('../dist/app');
-
+      
       app = await createApp();
       await app.ready();
-
-      console.log('✅ Fastify app initialized successfully');
+      
+      console.log('✅ Fastify app initialized for health');
     } catch (error) {
       console.error('❌ Failed to initialize Fastify app:', error);
       throw error;
@@ -31,38 +31,32 @@ async function getApp() {
   return app;
 }
 
-// Vercel serverless handler
+// Vercel serverless handler for health
 module.exports = async (req, res) => {
   try {
     const fastifyApp = await getApp();
-
+    
     // Handle the request with Fastify
     await fastifyApp.ready();
-
-    // Fix URL path for Vercel routing
-    const originalUrl = req.url;
-    console.log(`📝 Original URL: ${originalUrl}`);
-
-    // Vercel passes the full path, we need to ensure it starts with /api
-    if (originalUrl && !originalUrl.startsWith('/api')) {
-      req.url = '/api' + originalUrl;
-    }
-
-    console.log(`📝 Final URL: ${req.url}`);
-
+    
+    // Set the URL to health endpoint
+    req.url = '/api/health';
+    
+    console.log(`💚 Health request: ${req.method} ${req.url}`);
+    
     // Use Fastify's built-in request handler
     fastifyApp.server.emit('request', req, res);
+    
   } catch (error) {
-    console.error('❌ Serverless function error:', error);
-
+    console.error('❌ Health serverless function error:', error);
+    
     // Send error response if headers not sent
     if (!res.headersSent) {
       res.status(500).json({
         success: false,
         error: 'Internal Server Error',
         message: error.message,
-        timestamp: new Date().toISOString(),
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        timestamp: new Date().toISOString()
       });
     }
   }

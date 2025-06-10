@@ -9,8 +9,16 @@
   },
   "routes": [
     {
+      "src": "/api/docs(.*)",
+      "dest": "/api/docs.js"
+    },
+    {
+      "src": "/api/health(.*)",
+      "dest": "/api/health.js"
+    },
+    {
       "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "dest": "/api/index.js"
     },
     {
       "src": "/(.*)",
