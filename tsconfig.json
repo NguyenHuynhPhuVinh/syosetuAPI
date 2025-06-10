@@ -45,8 +45,7 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "src/test/**/*",
-    "api"
+    "src/test/**/*"
   ],
   "ts-node": {
     "require": ["tsconfig-paths/register"]

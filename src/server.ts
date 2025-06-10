@@ -69,7 +69,5 @@ async function startServer(): Promise<void> {
   }
 }
 
-// Start the server only if not in serverless environment
-if (!process.env['VERCEL']) {
-  void startServer();
-}
+// Start the server
+void startServer();
