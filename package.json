@@ -4,7 +4,7 @@
   "description": "Enterprise-grade Fastify TypeScript API for Syosetu.com data extraction using official API and web scraping",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.json",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
     "dev:watch": "nodemon --exec \"ts-node -r tsconfig-paths/register src/server.ts\"",
@@ -16,7 +16,7 @@
     "format": "prettier --write src/**/*.ts",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
-    "vercel-build": "npm run build"
+    "vercel-build": "node build.js"
   },
   "repository": {
     "type": "git",
