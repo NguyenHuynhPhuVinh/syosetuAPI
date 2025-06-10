@@ -1,51 +1,43 @@
-// Vercel serverless function entry point
-require('dotenv/config');
-
-// Import path for built files
-const path = require('path');
-
-// Set up module resolution for TypeScript paths
-require('module-alias/register');
-require('module-alias').addAlias('@', path.join(__dirname, '..', 'dist'));
-
-const { createApp } = require('../dist/app');
-
-let app;
-
-// Initialize Fastify app
-async function getApp() {
-  if (!app) {
-    try {
-      app = await createApp();
-      await app.ready();
-      console.log('✅ Fastify app initialized for serverless');
-    } catch (error) {
-      console.error('❌ Failed to initialize Fastify app:', error);
-      throw error;
-    }
-  }
-  return app;
-}
-
-// Vercel serverless handler
+// Simple health check endpoint for Vercel
 module.exports = async (req, res) => {
   try {
-    const fastifyApp = await getApp();
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PUT, DELETE, OPTIONS'
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization'
+    );
 
-    // Handle the request with Fastify
-    await fastifyApp.ready();
-    fastifyApp.server.emit('request', req, res);
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      res.status(200).end();
+      return;
+    }
+
+    // Simple API response
+    res.status(200).json({
+      success: true,
+      message: 'Syosetu API Backend is running on Vercel',
+      timestamp: new Date().toISOString(),
+      version: '3.0.0',
+      environment: 'serverless',
+      endpoints: {
+        health: '/api',
+        docs: '/api/docs',
+        syosetu: '/api/syosetu',
+      },
+    });
   } catch (error) {
     console.error('❌ Serverless function error:', error);
-
-    // Send error response
-    if (!res.headersSent) {
-      res.status(500).json({
-        success: false,
-        error: 'Internal Server Error',
-        message: error.message,
-        timestamp: new Date().toISOString(),
-      });
-    }
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
   }
 };
