@@ -1,6 +1,11 @@
 {
   "version": 2,
   "name": "syosetu-api-backend",
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 30
+    }
+  },
   "env": {
     "NODE_ENV": "production",
     "VERCEL": "1",
