@@ -1,0 +1,585 @@
+{
+  "info": {
+    "name": "Syosetu API Backend v3.0",
+    "description": "Enterprise-grade Fastify TypeScript API for Syosetu.com data extraction",
+    "version": "3.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "apiUrl",
+      "value": "{{baseUrl}}/api/syosetu",
+      "type": "string"
+    },
+    {
+      "key": "testNcode",
+      "value": "n4754kf",
+      "type": "string"
+    },
+    {
+      "key": "testChapter",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Basic Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Basic health check endpoint"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has correct version', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.version).to.eql('3.0.0');",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Detailed Status Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/status",
+              "host": ["{{apiUrl}}"],
+              "path": ["status"]
+            },
+            "description": "Detailed service status with cache and browser info"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has cache stats', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('cache');",
+                  "    pm.expect(jsonData.data.cache).to.have.property('metadata');",
+                  "    pm.expect(jsonData.data.cache).to.have.property('content');",
+                  "});",
+                  "",
+                  "pm.test('Response has browser status', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('browser');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Novel Data",
+      "item": [
+        {
+          "name": "Get Novel Metadata",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/novel/{{testNcode}}",
+              "host": ["{{apiUrl}}"],
+              "path": ["novel", "{{testNcode}}"]
+            },
+            "description": "Get detailed novel metadata using ncode"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has novel data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.have.property('ncode');",
+                  "    pm.expect(jsonData.data).to.have.property('title');",
+                  "    pm.expect(jsonData.data).to.have.property('author');",
+                  "});",
+                  "",
+                  "pm.test('Ncode matches request', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.ncode.toLowerCase()).to.eql(pm.collectionVariables.get('testNcode').toLowerCase());",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Single Chapter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/novel/{{testNcode}}/chapter/{{testChapter}}",
+              "host": ["{{apiUrl}}"],
+              "path": ["novel", "{{testNcode}}", "chapter", "{{testChapter}}"]
+            },
+            "description": "Get content of a specific chapter"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has chapter content', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.have.property('title');",
+                  "    pm.expect(jsonData.data).to.have.property('htmlContent');",
+                  "    pm.expect(jsonData.data).to.have.property('textContent');",
+                  "    pm.expect(jsonData.data).to.have.property('characterCount');",
+                  "});",
+                  "",
+                  "pm.test('Chapter number matches request', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.chapterNumber).to.eql(parseInt(pm.collectionVariables.get('testChapter')));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Multiple Chapters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chapters\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{apiUrl}}/novel/{{testNcode}}/chapters",
+              "host": ["{{apiUrl}}"],
+              "path": ["novel", "{{testNcode}}", "chapters"]
+            },
+            "description": "Get content of multiple chapters at once"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has multiple chapters', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data.chapters).to.be.an('array');",
+                  "    pm.expect(jsonData.data.totalRequested).to.eql(3);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid Ncode Test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/novel/invalid123!@#",
+              "host": ["{{apiUrl}}"],
+              "path": ["novel", "invalid123!@#"]
+            },
+            "description": "Test validation with invalid ncode"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response has error message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.false;",
+                  "    pm.expect(jsonData.error).to.include('không hợp lệ');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Search & Discovery",
+      "item": [
+        {
+          "name": "Basic Search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/search?keyword=異世界&limit=10&order=new",
+              "host": ["{{apiUrl}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "異世界"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "order",
+                  "value": "new"
+                }
+              ]
+            },
+            "description": "Search novels with basic parameters"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has search results', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.have.property('keyword');",
+                  "    pm.expect(jsonData.data).to.have.property('results');",
+                  "    pm.expect(jsonData.data.results).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Results have required fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data.results.length > 0) {",
+                  "        const firstResult = jsonData.data.results[0];",
+                  "        pm.expect(firstResult).to.have.property('ncode');",
+                  "        pm.expect(firstResult).to.have.property('title');",
+                  "        pm.expect(firstResult).to.have.property('author');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Advanced Search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/search?keyword=転生&order=hyoka&limit=20&biggenre=1&genre=101",
+              "host": ["{{apiUrl}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "転生"
+                },
+                {
+                  "key": "order",
+                  "value": "hyoka"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "biggenre",
+                  "value": "1"
+                },
+                {
+                  "key": "genre",
+                  "value": "101"
+                }
+              ]
+            },
+            "description": "Search with advanced filters"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has search results', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Validation - Empty Keyword",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/search?keyword=&limit=10",
+              "host": ["{{apiUrl}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": ""
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Test validation with empty keyword"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response has validation error', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.false;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rankings",
+      "item": [
+        {
+          "name": "Default Ranking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/ranking?order=hyoka&limit=20",
+              "host": ["{{apiUrl}}"],
+              "path": ["ranking"],
+              "query": [
+                {
+                  "key": "order",
+                  "value": "hyoka"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get default ranking by evaluation points"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has ranking data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.have.property('rankings');",
+                  "    pm.expect(jsonData.data.rankings).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Rankings have rank numbers', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data.rankings.length > 0) {",
+                  "        jsonData.data.rankings.forEach((item, index) => {",
+                  "            pm.expect(item.rank).to.eql(index + 1);",
+                  "        });",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Genre Ranking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/ranking?order=favnovelcnt&biggenre=1&limit=15",
+              "host": ["{{apiUrl}}"],
+              "path": ["ranking"],
+              "query": [
+                {
+                  "key": "order",
+                  "value": "favnovelcnt"
+                },
+                {
+                  "key": "biggenre",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Get ranking filtered by genre"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has ranking data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Weekly Ranking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiUrl}}/ranking?order=weeklypoint&limit=30",
+              "host": ["{{apiUrl}}"],
+              "path": ["ranking"],
+              "query": [
+                {
+                  "key": "order",
+                  "value": "weeklypoint"
+                },
+                {
+                  "key": "limit",
+                  "value": "30"
+                }
+              ]
+            },
+            "description": "Get weekly points ranking"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has ranking data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
