@@ -3,17 +3,14 @@
   "name": "syosetu-api-backend",
   "builds": [
     {
-      "src": "dist/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["dist/**"]
-      }
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "dist/server.js"
+      "dest": "/api"
     }
   ],
   "env": {
@@ -36,10 +33,5 @@
     "CONTENT_CACHE_TTL": "3600",
     "SYOSETU_API_BASE_URL": "https://api.syosetu.com/novelapi/api/",
     "SYOSETU_NCODE_BASE_URL": "https://ncode.syosetu.com"
-  },
-  "functions": {
-    "dist/server.js": {
-      "maxDuration": 30
-    }
   }
 }
