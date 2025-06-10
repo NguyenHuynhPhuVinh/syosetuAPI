@@ -19,6 +19,19 @@ Enterprise-grade Fastify TypeScript API chuyên dụng để lấy dữ liệu t
 
 ## 🚀 Cài đặt
 
+### Chạy nhanh với NPX (Recommended)
+
+```bash
+# Chạy trực tiếp mà không cần cài đặt
+npx syosetu-api-backend
+
+# Hoặc cài đặt global
+npm install -g syosetu-api-backend
+syosetu-api
+```
+
+### Development Setup
+
 ```bash
 # Clone repository
 git clone <repository-url>
