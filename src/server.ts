@@ -3,13 +3,10 @@ import { createApp } from './app';
 import { appConfig } from '@/config';
 import { logger } from '@/utils';
 
-// Create app instance for export
-let app: any;
-
 async function startServer(): Promise<void> {
   try {
     // Create Fastify app
-    app = await createApp();
+    const app = await createApp();
 
     // Start server
     await app.listen({
@@ -72,8 +69,7 @@ async function startServer(): Promise<void> {
   }
 }
 
-// Start the server
-void startServer();
-
-// Export for Vercel serverless
-module.exports = app;
+// Start the server only if not in serverless environment
+if (!process.env['VERCEL']) {
+  void startServer();
+}

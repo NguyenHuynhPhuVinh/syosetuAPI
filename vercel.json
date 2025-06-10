@@ -15,6 +15,7 @@
   ],
   "env": {
     "NODE_ENV": "production",
+    "VERCEL": "1",
     "PORT": "3000",
     "HOST": "0.0.0.0",
     "API_TIMEOUT": "30000",
