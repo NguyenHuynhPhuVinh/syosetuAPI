@@ -39,17 +39,6 @@ module.exports = async (req, res) => {
     // Handle the request with Fastify
     await fastifyApp.ready();
 
-    // Fix URL path for Vercel routing
-    const originalUrl = req.url;
-    console.log(`📝 Original URL: ${originalUrl}`);
-
-    // Vercel passes the full path, we need to ensure it starts with /api
-    if (originalUrl && !originalUrl.startsWith('/api')) {
-      req.url = '/api' + originalUrl;
-    }
-
-    console.log(`📝 Final URL: ${req.url}`);
-
     // Use Fastify's built-in request handler
     fastifyApp.server.emit('request', req, res);
   } catch (error) {
