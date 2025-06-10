@@ -1,6 +1,5 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import { appConfig, swaggerConfig } from '@/config';
-import { logger } from '@/utils';
 import { errorHandler, requestLogger } from '@/middleware';
 import { healthRoutes, syosetuRoutes } from '@/routes';
 
