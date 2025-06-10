@@ -4,7 +4,7 @@
   "description": "Enterprise-grade Fastify TypeScript API for Syosetu.com data extraction using official API and web scraping",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
     "dev:watch": "nodemon --exec \"ts-node -r tsconfig-paths/register src/server.ts\"",
@@ -49,6 +49,7 @@
     "axios": "^1.9.0",
     "cheerio": "^1.1.0",
     "fastify": "^5.3.3",
+    "module-alias": "^2.2.3",
     "node-cache": "^5.1.2",
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
@@ -67,7 +68,18 @@
     "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
+  },
+  "_moduleAliases": {
+    "@": "dist",
+    "@/config": "dist/config",
+    "@/controllers": "dist/controllers",
+    "@/services": "dist/services",
+    "@/routes": "dist/routes",
+    "@/types": "dist/types",
+    "@/utils": "dist/utils",
+    "@/middleware": "dist/middleware"
   }
 }

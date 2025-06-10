@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  syosetu-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: syosetu-api-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Application Settings
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      
+      # API Settings
+      API_TIMEOUT: 30000
+      MAX_CONCURRENT_REQUESTS: 5
+      
+      # Scraper Settings
+      SCRAPER_RETRIES: 3
+      SCRAPER_RETRY_DELAY: 1000
+      
+      # CORS Settings
+      CORS_ORIGIN: "*"
+      CORS_CREDENTIALS: "true"
+      
+      # Rate Limiting
+      RATE_LIMIT_WINDOW_MS: 900000  # 15 minutes
+      RATE_LIMIT_MAX: 100
+      CONTENT_RATE_LIMIT_WINDOW_MS: 300000  # 5 minutes
+      CONTENT_RATE_LIMIT_MAX: 20
+      
+      # Logging
+      LOG_LEVEL: info
+      LOG_PRETTY_PRINT: "false"
+      
+      # Cache Settings
+      METADATA_CACHE_TTL: 600   # 10 minutes
+      CONTENT_CACHE_TTL: 3600   # 1 hour
+      
+      # External APIs
+      SYOSETU_API_BASE_URL: "https://api.syosetu.com/novelapi/api/"
+      SYOSETU_NCODE_BASE_URL: "https://ncode.syosetu.com"
+    
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Read-only root filesystem for security
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+    
+    networks:
+      - syosetu-network
+
+  # Development service
+  syosetu-api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: syosetu-api-dev
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      HOST: 0.0.0.0
+      LOG_PRETTY_PRINT: "true"
+      LOG_LEVEL: debug
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - syosetu-network
+    profiles:
+      - dev
+
+networks:
+  syosetu-network:
+    driver: bridge

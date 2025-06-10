@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import 'dotenv/config';
 import { createApp } from './app';
 import { appConfig } from '@/config';
