@@ -34,10 +34,15 @@ async function getApp() {
 // Vercel serverless handler
 module.exports = async (req, res) => {
   try {
+    console.log(`🔍 Request: ${req.method} ${req.url}`);
+
     const fastifyApp = await getApp();
 
     // Handle the request with Fastify
     await fastifyApp.ready();
+
+    // Log available routes for debugging
+    console.log('📋 Available routes:', fastifyApp.printRoutes());
 
     // Use Fastify's built-in request handler
     fastifyApp.server.emit('request', req, res);
