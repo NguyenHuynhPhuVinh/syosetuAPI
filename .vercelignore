@@ -1,0 +1,13 @@
+src/
+*.ts
+tsconfig.json
+.env.local
+.env.development
+node_modules/
+.git/
+README.md
+.gitignore
+jest.config.js
+.eslintrc.js
+.prettierrc
+nodemon.json
