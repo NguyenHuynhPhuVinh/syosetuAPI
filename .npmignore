@@ -1,0 +1,63 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Development files
+.env
+.env.*
+!.env.example
+
+# Testing
+test/
+tests/
+__tests__/
+*.test.*
+*.spec.*
+jest.config.*
+coverage/
+
+# Development tools
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+*.tsbuildinfo
+tsconfig.json
+tsconfig.*.json
+
+# Development dependencies
+node_modules/
+.npm/
+.yarn/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Git
+.git/
+.gitignore
+
+# Postman
+postman/
+
+# Development scripts
+nodemon.json
+.eslintrc.*
+.prettierrc.*
+.editorconfig
+
+# OS
+.DS_Store
+Thumbs.db

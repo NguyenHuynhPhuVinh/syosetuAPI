@@ -1,11 +1,16 @@
 {
   "name": "@tomisakae/syosetu-api",
-  "version": "0.0.1",
-  "description": "Enterprise-grade Fastify TypeScript API for Syosetu.com data extraction using official API and web scraping. Run instantly with 'npx syosetu-api-backend'",
+  "version": "0.0.2",
+  "description": "Enterprise-grade Fastify TypeScript API for Syosetu.com data extraction using official API and web scraping. Run instantly with 'npx @tomisakae/syosetu-api'",
   "main": "dist/server.js",
   "bin": {
     "syosetu-api": "./dist/server.js"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "build": "npm run clean && tsc",
     "start": "node dist/server.js",
@@ -19,8 +24,7 @@
     "format": "prettier --write src/**/*.ts",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build",
-    "postinstall": "chmod +x bin/syosetu-api.js"
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
